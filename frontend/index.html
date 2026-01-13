@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sketch-to-Image AI</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        #container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #result {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        #result img {
+            max-width: 45%;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>🎨 Sketch-to-Image AI</h1>
+        <p>Upload your sketch and choose a model to generate a full-color image.</p>
+        <form id="upload-form">
+            <input type="file" id="sketch-input" accept="image/*" required>
+            <select id="model-select">
+                <option value="nano-banana">Nano Banana</option>
+                <option value="dalle3">DALL-E 3</option>
+                <option value="midjourney">Midjourney</option>
+                <option value="stable-diffusion">Stable Diffusion</option>
+            </select>
+            <button type="submit">Generate Image</button>
+        </form>
+        <div id="result">
+            <div id="original">
+                <h2>Original Sketch</h2>
+                <img id="original-image" src="" alt="Original Sketch">
+            </div>
+            <div id="generated">
+                <h2>Generated Image</h2>
+                <img id="generated-image" src="" alt="Generated Image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const sketchInput = document.getElementById('sketch-input');
+        const modelSelect = document.getElementById('model-select');
+        const originalImage = document.getElementById('original-image');
+        const generatedImage = document.getElementById('generated-image');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('sketch', sketchInput.files[0]);
+            formData.append('model', modelSelect.value);
+
+            originalImage.src = URL.createObjectURL(sketchInput.files[0]);
+
+            const response = await fetch('/generate-image/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const blob = await response.blob();
+            generatedImage.src = URL.createObjectURL(blob);
+        });
+    </script>
+</body>
+</html>
